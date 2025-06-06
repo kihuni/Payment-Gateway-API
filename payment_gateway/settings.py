@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+import paypalrestsdk
+
 
 load_dotenv()
 
@@ -35,9 +37,8 @@ ALLOWED_HOSTS = ['*']
 
 PAYPAL_CLIENT_ID = os.getenv('PAYPAL_CLIENT_ID')
 PAYPAL_CLIENT_SECRET = os.getenv('PAYPAL_CLIENT_SECRET')
-PAYPAL_MODE = os.getenv('PAYPAL_MODE')
+PAYPAL_MODE = os.getenv('PAYPAL_MODE', 'sandbox')
 
-import paypalrestsdk
 
 paypalrestsdk.configure({
   "mode": PAYPAL_MODE,
