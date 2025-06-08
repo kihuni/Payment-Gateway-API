@@ -1,6 +1,6 @@
 # 💳 Payment Gateway API for Small Businesses
 
-A simple, RESTful API that allows small businesses to accept payments via PayPal without requiring user authentication. Built with Django REST Framework.
+A simple, RESTful API that allows small businesses to accept payments via PayPal. Built with Django REST Framework.
 
 ## 🚀 Features
 
