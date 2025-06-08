@@ -31,3 +31,8 @@ jobs:
     - name: Run tests
       run: |
         python manage.py test
+
+    - name: Deploy to Render
+      if: github.ref == 'refs/heads/main' && success()
+      run: |
+          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
