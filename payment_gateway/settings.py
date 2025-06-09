@@ -31,9 +31,12 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 #DEBUG = True # development
 DEBUG = False
-ALLOWED_HOSTS = ['https://payment-gateway-api-2c52.onrender.com']
 
-
+ALLOWED_HOSTS = [
+    'payment-gateway-api-2c52.onrender.com',
+    'localhost',  # For local testing
+    '127.0.0.1',  # For local testing
+]
 
 PAYPAL_CLIENT_ID = os.getenv('PAYPAL_CLIENT_ID', '')
 PAYPAL_CLIENT_SECRET = os.getenv('PAYPAL_CLIENT_SECRET', '')
