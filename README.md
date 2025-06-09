@@ -30,15 +30,19 @@ A simple, RESTful API that allows small businesses to accept payments via PayPal
 ## API Endpoints
 
 ### Initiate a Payment
+
 **Endpoint**: `POST /api/v1/payments/`  
 **Description**: Initiates a PayPal payment.  
 **Request Body**:
-```json
+
+```
 {
   "customer_name": "John Doe",
   "customer_email": "john@example.com",
   "amount": 50.00
 }
+
+```
 
 Response (201 Created):
 
