@@ -49,11 +49,17 @@ Response (201 Created):
 response:
 
 ```
-{
-  "status": "success",
-  "message": "Payment initiated successfully.",
-  "payment_id": "PAY-123"
 }
+    "payment": {
+        "id": "PAY-123",
+        "customer_name": "John Doe",
+        "customer_email": "john@example.com",
+        "amount": 50.00,
+        "status": "completed"
+    },
+    "status": "success",
+    "message": "Payment details retrieved successfully."
+}}
 
 ```
 ![image](https://github.com/user-attachments/assets/664a34e0-fc68-4c7f-acf7-bc14d6abc65f)
