@@ -52,6 +52,8 @@ response:
 }
 
 ```
+![image](https://github.com/user-attachments/assets/664a34e0-fc68-4c7f-acf7-bc14d6abc65f)
+
 
 2. Retrieve Payment Status
    
@@ -74,6 +76,8 @@ Response:
 }
 
 ```
+![image](https://github.com/user-attachments/assets/17bbb3ff-8b0c-4f69-bbf5-c029a4d4b646)
+
 
 ##  Running the Service Locally
 
