@@ -47,6 +47,7 @@ A simple, RESTful API that allows small businesses to accept payments via PayPal
 
 ![image](https://github.com/user-attachments/assets/664a34e0-fc68-4c7f-acf7-bc14d6abc65f)
 
+![image](https://github.com/user-attachments/assets/d0887090-5124-46f3-b1b6-8407886d03ba)
 
 2. Retrieve Payment Status
    
