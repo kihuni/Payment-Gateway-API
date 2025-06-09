@@ -20,27 +20,27 @@ A simple, RESTful API that allows small businesses to accept payments via PayPal
 
 ## Tech Stack
 
-- Backend: Django, Django REST Framework
-
-- Payment Gateway: PayPal SDK 
-
-- CI/CD: GitHub Actions
+- **Backend**: Django, Django REST Framework
+- **Payment Gateway**: PayPal SDK (`paypalrestsdk`)
+- **Database**: PostgreSQL
+- **CI/CD**: GitHub Actions
+- **Deployment**: Render
+- **Python Version**: 3.12
 
 ## API Endpoints
 
-1. Initiate a Payment
-Endpoint:
-`POST /api/v1/payments/`
-
-Request Body:
-
-```
+### Initiate a Payment
+**Endpoint**: `POST /api/v1/payments/`  
+**Description**: Initiates a PayPal payment.  
+**Request Body**:
+```json
 {
   "customer_name": "John Doe",
   "customer_email": "john@example.com",
   "amount": 50.00
 }
-```
+
+Response (201 Created):
 
 response:
 
@@ -59,8 +59,8 @@ response:
    
 Endpoint:
 `GET /api/v1/payments/<payment_id>/`
-
-Response:
+- Description: Retrieves the status of a payment.
+- Response (200 OK):
 
 ```
 {
@@ -77,6 +77,30 @@ Response:
 
 ```
 ![image](https://github.com/user-attachments/assets/17bbb3ff-8b0c-4f69-bbf5-c029a4d4b646)
+
+## Execute Payment
+- Endpoint:  `GET /api/v1/payment/execute/`
+- Description: Finalizes a PayPal payment after user approval. Called by PayPal redirect with query parameters paymentId and PayerID.
+- Example URL: `/api/v1/payment/execute/?paymentId=PAY-123456&PayerID=123`
+Response (200 OK):
+
+{
+  "status": "success",
+  "message": "Payment executed successfully",
+  "payment_id": 1
+}
+
+## Cancel Payment
+- Endpoint: GET /api/v1/payment/cancel/
+- Description: Marks a payment as canceled aftethe r user declines on PayPal. Called by PayPal redirect with query parameter paymentId.
+- Example URL: `/api/v1/payment/cancel/?paymentId=PAY-123456`
+- Response (200 OK):
+
+{
+  "status": "success",
+  "message": "Payment cancelled successfully",
+  "payment_id": 1
+}
 
 
 ##  Running the Service Locally
@@ -119,7 +143,7 @@ PAYPAL_CLIENT_SECRET=your_paypal_client_secret
 ```
 python manage.py migrate
 python manage.py runserver
-
+python manage.py runserver
 ```
 
 ## ✅ Running Tests
@@ -130,13 +154,14 @@ python manage.py test
 
 ```
 
-These tests cover:
+The tests cover:
+- Payment initiation (success, missing fields, invalid amount)
 
-- Successful payment initiation
+- Payment status retrieval (success)
 
-- Invalid payloads
+- Payment execution (success, not found)
 
-- Payment status retrieval
+- Payment cancellation (success, not found)
 
 
 ##  CI/CD with GitHub Actions
@@ -174,9 +199,18 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
+    - name: Collect static files
+      run: |
+        python manage.py collectstatic --noinput
+
     - name: Run tests
       run: |
         python manage.py test
+
+    - name: Deploy to Render
+      if: github.ref == 'refs/heads/main' && success()
+      run: |
+          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
 
 ```
 
