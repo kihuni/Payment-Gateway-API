@@ -6,6 +6,6 @@ from .views import PaymentCreateView, PaymentStatusView, PaymentExecuteView, Pay
 urlpatterns = [
     path('payments/', PaymentCreateView.as_view(), name='initiate-payment'),
     path('payments/<int:pk>/', PaymentStatusView.as_view(), name='payment-status'),
-     path('payment/execute/', PaymentExecuteView.as_view(), name='payment-execute'),
+    path('payment/execute/', PaymentExecuteView.as_view(), name='payment-execute'),
     path('payment/cancel/', PaymentCancelView.as_view(), name='payment-cancel'),
 ]

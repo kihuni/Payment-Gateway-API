@@ -21,8 +21,8 @@ class PaymentCreateView(APIView):
                 "intent": "sale",
                 "payer": {"payment_method": "paypal"},
                 "redirect_urls": {
-                    "return_url": "https://payment-gateway-api-2c52.onrender.com/payment/execute",
-                    "cancel_url": "https://payment-gateway-api-2c52.onrender.com/payment/cancel"
+                    "return_url": "https://payment-gateway-api-2c52.onrender.com/api/v1/payment/execute",
+                    "cancel_url": "https://payment-gateway-api-2c52.onrender.com/api/v1/payment/cancel"
                 },
                 "transactions": [{
                     "item_list": {
@@ -87,7 +87,7 @@ class PaymentStatusView(APIView):
                 "status": "error",
                 "message": "An unexpected error occurred."
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            
+
 class PaymentExecuteView(APIView):
     def get(self, request):
         try:
@@ -109,6 +109,11 @@ class PaymentExecuteView(APIView):
                     "status": "error",
                     "message": str(payment.error)
                 }, status=status.HTTP_400_BAD_REQUEST)
+        except paypalrestsdk.ResourceNotFound:
+            return Response({
+                "status": "error",
+                "message": "Payment not found"
+            }, status=status.HTTP_404_NOT_FOUND)
         except Payment.DoesNotExist:
             return Response({
                 "status": "error",
@@ -136,7 +141,7 @@ class PaymentCancelView(APIView):
         except Payment.DoesNotExist:
             return Response({
                 "status": "error",
-                "message": "Payment not found"
+                "message": "Payment not found."
             }, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             logger.error(f"Error in PaymentCancelView: {str(e)}", exc_info=True)
