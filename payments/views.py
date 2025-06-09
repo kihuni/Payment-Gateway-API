@@ -87,3 +87,60 @@ class PaymentStatusView(APIView):
                 "status": "error",
                 "message": "An unexpected error occurred."
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            
+class PaymentExecuteView(APIView):
+    def get(self, request):
+        try:
+            payment_id = request.GET.get('paymentId')
+            payer_id = request.GET.get('PayerID')
+            payment = paypalrestsdk.Payment.find(payment_id)
+            if payment.execute({"payer_id": payer_id}):
+                db_payment = Payment.objects.get(paypal_payment_id=payment_id)
+                db_payment.status = 'completed'
+                db_payment.save()
+                return Response({
+                    "status": "success",
+                    "message": "Payment executed successfully",
+                    "payment_id": db_payment.id
+                }, status=status.HTTP_200_OK)
+            else:
+                logger.error(f"Payment execution failed: {payment.error}")
+                return Response({
+                    "status": "error",
+                    "message": str(payment.error)
+                }, status=status.HTTP_400_BAD_REQUEST)
+        except Payment.DoesNotExist:
+            return Response({
+                "status": "error",
+                "message": "Payment not found"
+            }, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            logger.error(f"Error in PaymentExecuteView: {str(e)}", exc_info=True)
+            return Response({
+                "status": "error",
+                "message": f"An unexpected error occurred: {str(e)}"
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class PaymentCancelView(APIView):
+    def get(self, request):
+        try:
+            payment_id = request.GET.get('paymentId')
+            db_payment = Payment.objects.get(paypal_payment_id=payment_id)
+            db_payment.status = 'cancelled'
+            db_payment.save()
+            return Response({
+                "status": "success",
+                "message": "Payment cancelled successfully",
+                "payment_id": db_payment.id
+            }, status=status.HTTP_200_OK)
+        except Payment.DoesNotExist:
+            return Response({
+                "status": "error",
+                "message": "Payment not found"
+            }, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            logger.error(f"Error in PaymentCancelView: {str(e)}", exc_info=True)
+            return Response({
+                "status": "error",
+                "message": f"An unexpected error occurred: {str(e)}"
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
