@@ -9,13 +9,18 @@ import paypalrestsdk
 
 class PaymentCreateView(APIView):
     def post(self, request):
-        data = request.data
+        serializer = PaymentSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        data = serializer.validated_data
+
         payment = paypalrestsdk.Payment({
             "intent": "sale",
-            "payer": { "payment_method": "paypal" },
+            "payer": {"payment_method": "paypal"},
             "redirect_urls": {
-                "return_url": "http://localhost:8000/payment/execute",
-                "cancel_url": "http://localhost:8000/payment/cancel"
+                "return_url": "https://payment-gateway-api-2c52.onrender.com/payment/execute",
+                "cancel_url": "https://payment-gateway-api-2c52.onrender.com/payment/cancel"
             },
             "transactions": [{
                 "item_list": {
@@ -49,9 +54,9 @@ class PaymentCreateView(APIView):
                 "paypal_payment_id": payment.id,
                 "approval_url": next(link.href for link in payment.links if link.rel == "approval_url")
             }, status=status.HTTP_201_CREATED)
-        else:
-            return Response({"status": "error", "message": payment.error}, status=400)
 
+        return Response({"status": "error", "message": payment.error}, status=400)
+    
 class PaymentStatusView(APIView):
     def get(self, request, pk):
         try:
