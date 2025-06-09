@@ -6,4 +6,5 @@ python-decouple==3.8
 paypalrestsdk
 python-dotenv
 gunicorn
-whitenoise
+whitenoisepsycopg==3.2.1
+psycopg==3.2.1
