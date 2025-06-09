@@ -76,7 +76,8 @@ Response:
 }
 
 ```
-![image](https://github.com/user-attachments/assets/4ef8bbb4-f06d-4a03-b603-72bec35a7a7e)
+![image](https://github.com/user-attachments/assets/17bbb3ff-8b0c-4f69-bbf5-c029a4d4b646)
+
 
 ##  Running the Service Locally
 
