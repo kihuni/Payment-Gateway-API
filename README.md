@@ -87,25 +87,29 @@ Endpoint:
 - Description: Finalizes a PayPal payment after user approval. Called by PayPal redirect with query parameters paymentId and PayerID.
 - Example URL: `/api/v1/payment/execute/?paymentId=PAY-123456&PayerID=123`
 Response (200 OK):
-
+```
 {
   "status": "success",
   "message": "Payment executed successfully",
   "payment_id": 1
 }
 
+```
+![image](https://github.com/user-attachments/assets/5259bfd4-36f7-4556-8a5c-ed38cd86ca12)
+
 ## Cancel Payment
 - Endpoint: GET /api/v1/payment/cancel/
-- Description: Marks a payment as canceled aftethe r user declines on PayPal. Called by PayPal redirect with query parameter paymentId.
+- Description: Marks a payment as canceled after the user declines on PayPal. Called by PayPal redirect with query parameter paymentId.
 - Example URL: `/api/v1/payment/cancel/?paymentId=PAY-123456`
 - Response (200 OK):
-
+```
 {
   "status": "success",
   "message": "Payment cancelled successfully",
   "payment_id": 1
 }
 
+```
 
 ##  Running the Service Locally
 
