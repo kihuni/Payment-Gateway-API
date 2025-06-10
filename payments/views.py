@@ -93,6 +93,12 @@ class PaymentExecuteView(APIView):
         try:
             payment_id = request.GET.get('paymentId')
             payer_id = request.GET.get('PayerID')
+            if not payment_id or not payer_id:
+                return Response({
+                    "status": "error",
+                    "message": "Missing paymentId or PayerID. Please ensure the payment is approved via PayPal."
+                }, status=status.HTTP_400_BAD_REQUEST)
+
             payment = paypalrestsdk.Payment.find(payment_id)
             if payment.execute({"payer_id": payer_id}):
                 db_payment = Payment.objects.get(paypal_payment_id=payment_id)
@@ -104,10 +110,16 @@ class PaymentExecuteView(APIView):
                     "payment_id": db_payment.id
                 }, status=status.HTTP_200_OK)
             else:
-                logger.error(f"Payment execution failed: {payment.error}")
+                error = payment.error
+                logger.error(f"Payment execution failed: {error}")
+                if error.get('name') == 'PAYMENT_NOT_APPROVED_FOR_EXECUTION':
+                    return Response({
+                        "status": "error",
+                        "message": "Payment not approved by payer. Please complete approval on PayPal."
+                    }, status=status.HTTP_400_BAD_REQUEST)
                 return Response({
                     "status": "error",
-                    "message": str(payment.error)
+                    "message": str(error)
                 }, status=status.HTTP_400_BAD_REQUEST)
         except paypalrestsdk.ResourceNotFound:
             return Response({
@@ -130,6 +142,12 @@ class PaymentCancelView(APIView):
     def get(self, request):
         try:
             payment_id = request.GET.get('paymentId')
+            if not payment_id:
+                return Response({
+                    "status": "error",
+                    "message": "Missing paymentId"
+                }, status=status.HTTP_400_BAD_REQUEST)
+
             db_payment = Payment.objects.get(paypal_payment_id=payment_id)
             db_payment.status = 'cancelled'
             db_payment.save()
@@ -141,7 +159,7 @@ class PaymentCancelView(APIView):
         except Payment.DoesNotExist:
             return Response({
                 "status": "error",
-                "message": "Payment not found."
+                "message": "Payment not found"
             }, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             logger.error(f"Error in PaymentCancelView: {str(e)}", exc_info=True)

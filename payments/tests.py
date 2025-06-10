@@ -106,3 +106,12 @@ class PaymentTests(APITestCase):
         response = self.client.get(cancel_url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.data["status"], "error") 
+    @patch('paypalrestsdk.Payment')
+    def test_payment_execute_missing_payer_id(self, MockPayment):
+        mock_payment = MagicMock()
+        mock_payment.id = "PAY-123456"
+        MockPayment.find.return_value = mock_payment
+        execute_url = reverse('payment-execute') + '?paymentId=PAY-123456'
+        response = self.client.get(execute_url)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data["message"], "Missing paymentId or PayerID. Please ensure the payment is approved via PayPal.")

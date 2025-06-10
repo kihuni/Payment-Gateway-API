@@ -10,10 +10,30 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:17.2
+        env:
+          POSTGRES_DB: ${{ secrets.DB_NAME }}
+          POSTGRES_USER: ${{ secrets.DB_USER }}
+          POSTGRES_PASSWORD:  ${{ secrets.DB_PASSWORD }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     env:
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       PAYPAL_CLIENT_ID: ${{ secrets.PAYPAL_CLIENT_ID }}
       PAYPAL_CLIENT_SECRET: ${{ secrets.PAYPAL_CLIENT_SECRET }}
+      DB_NAME: ${{ secrets. DB_NAME}}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_PORT: 5432
 
     steps:
     - uses: actions/checkout@v2
@@ -28,6 +48,14 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
+    - name: Wait for PostgreSQL
+      run: |
+        until pg_isready -h localhost -p 5432; do sleep 1; done
+
+    - name: Run migrations
+      run: |
+        python manage.py migrate
+
     - name: Collect static files
       run: |
         python manage.py collectstatic --noinput
@@ -39,4 +67,4 @@ jobs:
     - name: Deploy to Render
       if: github.ref == 'refs/heads/main' && success()
       run: |
-          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
+        curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
